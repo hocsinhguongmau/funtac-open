@@ -1,0 +1,15 @@
+title New note
+
+note over browser:
+Users add new note and click save
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over server:
+Server receives request and write it on database
+end note
+
+note over browser:
+browser does not reload, it runs a function to re-render the page to display new content
+end note
