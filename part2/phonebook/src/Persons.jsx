@@ -1,9 +1,10 @@
 import React from "react"
 
-export default function Persons({ results }) {
-	return results.map((person, index) => (
-		<p key={`person_${index}`}>
-			{person.name} {person.number}
+export default function Persons({ results, handleDelete }) {
+	return results.map((person) => (
+		<p key={person.id}>
+			{person.name} {person.number}{" "}
+			<button onClick={() => handleDelete(person.id)}>Delete</button>
 		</p>
 	))
 }

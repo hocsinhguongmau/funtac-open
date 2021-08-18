@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 import Persons from "./Persons"
 import Form from "./Form"
 import Filter from "./Filter"
+import personsService from "./service/persons"
 
 const App = () => {
 	const [persons, setPersons] = useState([])
@@ -11,27 +11,34 @@ const App = () => {
 	const [newNumber, setNewNumber] = useState("")
 
 	useEffect(() => {
-		axios.get("http://localhost:3001/persons").then((response) => {
-			setPersons(response.data)
-			setResults(response.data)
+		personsService.getAll().then((initialPersons) => {
+			setPersons(initialPersons)
+			setResults(initialPersons)
 		})
 	}, [])
+
 	const handleSubmit = (event) => {
 		event.preventDefault()
 
 		if (results.find((person) => person.name === newName)) {
 			alert(`${newName} is already added to phonebook`)
 		} else {
-			setPersons([...persons, { name: newName, number: newNumber }])
-			setResults([...persons, { name: newName, number: newNumber }])
+			const newPersons = { name: newName, number: newNumber }
+			personsService.create(newPersons).then((updatedPersons) => {
+				setPersons(persons.concat(updatedPersons))
+				setResults(results.concat(updatedPersons))
+			})
 		}
 	}
+
 	const handleChangeName = (event) => {
 		setNewName(event.target.value)
 	}
+
 	const handleChangeNumber = (event) => {
 		setNewNumber(event.target.value)
 	}
+
 	const handleFilter = (event) => {
 		const searchString = event.target.value.toLowerCase().split(" ")
 		const filterPersons = persons.filter((person) => {
@@ -49,6 +56,14 @@ const App = () => {
 		setResults(filterPersons)
 	}
 
+	const handleDelete = (id) => {
+		if (window.confirm("Do you want to delete this person?")) {
+			const updatedPersons = results.filter((result) => result.id !== id)
+			setPersons(updatedPersons)
+			setResults(updatedPersons)
+			personsService.remove(id)
+		}
+	}
 	return (
 		<div>
 			<h2>Phonebook</h2>
@@ -58,7 +73,7 @@ const App = () => {
 				handleSubmit={handleSubmit}
 				handleChangeNumber={handleChangeNumber}
 			/>
-			<Persons results={results} />
+			<Persons results={results} handleDelete={handleDelete} />
 		</div>
 	)
 }
