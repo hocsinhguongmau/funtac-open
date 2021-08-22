@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import Persons from "./Persons"
 import Form from "./Form"
 import Filter from "./Filter"
+import Notification from "./Notification"
 import personsService from "./service/persons"
 
 const App = () => {
@@ -9,19 +10,35 @@ const App = () => {
 	const [results, setResults] = useState([])
 	const [newName, setNewName] = useState("")
 	const [newNumber, setNewNumber] = useState("")
+	const [errorMessage, setErrorMessage] = useState("")
 
 	useEffect(() => {
 		personsService.getAll().then((initialPersons) => {
 			setPersons(initialPersons)
 			setResults(initialPersons)
 		})
-	}, [])
+	}, [persons])
 
 	const handleSubmit = (event) => {
 		event.preventDefault()
 
 		if (results.find((person) => person.name === newName)) {
-			alert(`${newName} is already added to phonebook`)
+			if (
+				window.confirm(
+					`${newName} is already added to phonebook. Do you want to change phone number`,
+				)
+			) {
+				results.forEach((person, index) => {
+					if (person.name === newName) {
+						const modifiedResults = [...results]
+						modifiedResults[index].number = newNumber
+
+						personsService
+							.update(person.id, modifiedResults)
+							.then(setResults(modifiedResults))
+					}
+				})
+			}
 		} else {
 			const newPersons = { name: newName, number: newNumber }
 			personsService.create(newPersons).then((updatedPersons) => {
@@ -67,6 +84,7 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<Notification message={errorMessage} />
 			<Filter handleFilter={handleFilter} />
 			<Form
 				handleChangeName={handleChangeName}
