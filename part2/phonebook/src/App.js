@@ -10,14 +10,15 @@ const App = () => {
 	const [results, setResults] = useState([])
 	const [newName, setNewName] = useState("")
 	const [newNumber, setNewNumber] = useState("")
-	const [errorMessage, setErrorMessage] = useState("")
+	const [errorMessage, setErrorMessage] = useState(null)
+	const [error, setError] = useState(false)
 
 	useEffect(() => {
 		personsService.getAll().then((initialPersons) => {
 			setPersons(initialPersons)
 			setResults(initialPersons)
 		})
-	}, [persons])
+	}, [])
 
 	const handleSubmit = (event) => {
 		event.preventDefault()
@@ -32,10 +33,19 @@ const App = () => {
 					if (person.name === newName) {
 						const modifiedResults = [...results]
 						modifiedResults[index].number = newNumber
-
 						personsService
 							.update(person.id, modifiedResults)
 							.then(setResults(modifiedResults))
+							.catch(() => {
+								setErrorMessage("This person does not exist")
+								setError(true)
+								personsService
+									.getAll()
+									.then((initialPersons) => {
+										setPersons(initialPersons)
+										setResults(initialPersons)
+									})
+							})
 					}
 				})
 			}
@@ -44,8 +54,13 @@ const App = () => {
 			personsService.create(newPersons).then((updatedPersons) => {
 				setPersons(persons.concat(updatedPersons))
 				setResults(results.concat(updatedPersons))
+				setErrorMessage("Successful")
 			})
 		}
+		setTimeout(() => {
+			setErrorMessage(null)
+			setError(false)
+		}, 5000)
 	}
 
 	const handleChangeName = (event) => {
@@ -84,7 +99,9 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
-			<Notification message={errorMessage} />
+			{errorMessage ? (
+				<Notification message={errorMessage} error={error} />
+			) : null}
 			<Filter handleFilter={handleFilter} />
 			<Form
 				handleChangeName={handleChangeName}
