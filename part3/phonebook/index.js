@@ -1,6 +1,25 @@
 const http = require("http")
+const morgan = require("morgan")
 const express = require("express")
 const app = express()
+// app.use(morgan("tiny"))
+
+// morgan.token("body", (req) => JSON.stringify(req.body))
+
+app.use(
+	morgan((tokens, req, res) => {
+		return [
+			tokens.method(req, res),
+			tokens.url(req, res),
+			tokens.status(req, res),
+			tokens.res(req, res, "content-length"),
+			"-",
+			tokens["response-time"](req, res),
+			"ms",
+			JSON.stringify(req.body),
+		].join(" ")
+	}),
+)
 let persons = [
 	{
 		id: 1,
@@ -69,11 +88,11 @@ app.post("/api/persons", (request, response) => {
 		})
 	}
 
-	if (persons.filter((person) => person.name === body.name)) {
-		return response.status(400).json({
-			error: "Name must be unique",
-		})
-	}
+	// if (persons.filter((person) => person.name === body.name)) {
+	// 	return response.status(400).json({
+	// 		error: "Name must be unique",
+	// 	})
+	// }
 
 	const newPersons = [
 		...persons,
