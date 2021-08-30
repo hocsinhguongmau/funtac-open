@@ -1,11 +1,12 @@
-const http = require("http")
 const morgan = require("morgan")
 const express = require("express")
 const app = express()
-// app.use(morgan("tiny"))
+const cors = require("cors")
 
+// app.use(morgan("tiny"))
 // morgan.token("body", (req) => JSON.stringify(req.body))
 
+app.use(cors())
 app.use(
 	morgan((tokens, req, res) => {
 		return [
@@ -88,11 +89,11 @@ app.post("/api/persons", (request, response) => {
 		})
 	}
 
-	// if (persons.filter((person) => person.name === body.name)) {
-	// 	return response.status(400).json({
-	// 		error: "Name must be unique",
-	// 	})
-	// }
+	if (persons.find((person) => person.name === body.name)) {
+		return response.status(400).json({
+			error: "Name must be unique",
+		})
+	}
 
 	const newPersons = [
 		...persons,
@@ -101,6 +102,6 @@ app.post("/api/persons", (request, response) => {
 	response.json(newPersons)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
