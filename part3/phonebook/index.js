@@ -34,11 +34,27 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  const length = persons.length;
   const time = new Date();
-  response.send(
-    `<div><p>Phone book has info for ${length} people</p><p>${time}</p>`
-  );
+  Person.find({}).then((persons) => {
+    const length = persons.length;
+    persons.map((person) => person.toJSON());
+    response.send(
+      `<div><p>Phone book has info for ${length} people</p><p>${time}</p>`
+    );
+  });
+});
+
+app.get("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
+  Person.findById(id)
+    .then((person) => {
+      if (person) {
+        response.json(person.toJSON());
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
