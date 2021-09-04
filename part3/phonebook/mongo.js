@@ -1,18 +1,19 @@
 const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
-  console.log('Please provide the password as an argument: node mongo.js <password>')
+  console.log(
+    'Please provide the password as an argument: node mongo.js <password>'
+  )
   process.exit(1)
-}else{
-  console.log(process.argv);
+} else {
+  console.log(process.argv)
 }
 
 const password = process.argv[2]
 
-const url =
-  `mongodb+srv://fullstack:${password}@cluster0.wab9n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+const url = `mongodb+srv://fullstack:${password}@cluster0.wab9n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
 
-mongoose.connect(url, { useNewUrlParser: true,useUnifiedTopology: true })
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const personSchema = new mongoose.Schema({
   name: String,
@@ -44,7 +45,7 @@ if (process.argv.length === 3) {
 
 if (process.argv.length === 4 || process.argv.length > 5) {
   console.log(
-    'Please provide the right number of arguments. If the name you are trying to add containes spaces, wrap it in quotes.',
+    'Please provide the right number of arguments. If the name you are trying to add containes spaces, wrap it in quotes.'
   )
   mongoose.connection.close()
 }
