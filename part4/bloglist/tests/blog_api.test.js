@@ -94,7 +94,23 @@ test('blog without title or url is not added', async () => {
   const blogsAtEnd = await helper.blogsInDb()
   expect(blogsAtEnd).toHaveLength(helper.blogs.length)
 })
+test('if like is missing, it will be 0 by default', async () => {
+  const newBlogWithoutLikes = {
+    title: 'Tettttt',
+    author: 'Hmm',
+    url: 'http',
+  }
 
+  await api
+    .post('/api/blogs')
+    .send(newBlogWithoutLikes)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  const blogsAtEnd = await helper.blogsInDb()
+  const like = blogsAtEnd[blogsAtEnd.length - 1].likes
+  expect(blogsAtEnd).toHaveLength(helper.blogs.length + 1)
+  expect(like).toBe(0)
+})
 test('a specific blog can be viewed', async () => {
   const blogsAtStart = await helper.blogsInDb()
 
@@ -123,6 +139,11 @@ test('a blog can be deleted', async () => {
   const contents = blogsAtEnd.map((r) => r.title)
 
   expect(contents).not.toContain(blogToDelete.title)
+})
+
+test('test that verifies that the unique identifier property of the blog posts is named id,', async () => {
+  const blogs = await Blog.find({})
+  expect(blogs[0]._id).toBeDefined()
 })
 
 afterAll(() => {

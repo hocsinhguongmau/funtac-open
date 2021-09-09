@@ -71,9 +71,7 @@ blogRouter.post('/', async (request, response) => {
     })
   }
   if (!body.likes) {
-    return response.status(400).json({
-      error: 'Like is required',
-    })
+    body.likes = 0
   }
 
   const blog = new Blog({
