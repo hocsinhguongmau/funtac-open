@@ -53,7 +53,7 @@ blogRouter.delete('/:id', (request, response, next) => {
     .catch((error) => next(error))
 })
 
-blogRouter.post('/', (request, response, next) => {
+blogRouter.post('/', async (request, response) => {
   const { body } = request
   if (!body.title) {
     return response.status(400).json({
@@ -83,13 +83,8 @@ blogRouter.post('/', (request, response, next) => {
     likes: body.likes,
   })
 
-  blog
-    .save()
-    .then((savedBlog) => savedBlog.toJSON())
-    .then((savedAndFormattedBlog) => {
-      response.json(savedAndFormattedBlog)
-    })
-    .catch((error) => next(error))
+  const savedBlog = await blog.save()
+  response.json(savedBlog)
 })
 
 module.exports = blogRouter

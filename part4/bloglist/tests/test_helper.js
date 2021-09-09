@@ -1,11 +1,5 @@
-const listHelper = require('../utils/list_helper')
+const Blog = require('../models/blog')
 
-test('dummy returns one', () => {
-  const blogs = []
-
-  const result = listHelper.dummy(blogs)
-  expect(result).toBe(1)
-})
 const listWithOneBlog = [
   {
     _id: '5a422aa71b54a676234d17f8',
@@ -67,44 +61,28 @@ const blogs = [
     __v: 0,
   },
 ]
-describe('total likes', () => {
-  test('when list has only one blog, equals the likes of that', () => {
-    const result = listHelper.totalLikes(listWithOneBlog)
-    expect(result).toBe(5)
-  })
-  test('when list has multiple blogs, equals the likes of them', () => {
-    const result = listHelper.totalLikes(blogs)
-    expect(result).toBe(36)
-  })
-})
 
-describe('most favorite', () => {
-  test('blog has the most likes', () => {
-    const result = listHelper.favoriteBlog(blogs)
-    expect(result).toEqual({
-      title: 'Canonical string reduction',
-      author: 'Edsger W. Dijkstra',
-      likes: 12,
-    })
+const nonExistingId = async () => {
+  const blog = new Blog({
+    title: 'Testtttt',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
+    likes: 10,
   })
-})
+  await blog.save()
+  await blog.remove()
 
-describe('most blogs author', () => {
-  test('author has the most blogs', () => {
-    const result = listHelper.mostBlogsAuthor(blogs)
-    expect(result).toEqual({
-      author: 'Robert C. Martin',
-      blogs: 3,
-    })
-  })
-})
+  return blog._id.toString()
+}
 
-describe('most blogs author', () => {
-  test('author has the most blogs', () => {
-    const result = listHelper.mostLikesAuthor(blogs)
-    expect(result).toEqual({
-      author: 'Edsger W. Dijkstra',
-      likes: 17,
-    })
-  })
-})
+const blogsInDb = async () => {
+  const blogs = await Blog.find({})
+  return blogs.map((blog) => blog.toJSON())
+}
+
+module.exports = {
+  listWithOneBlog,
+  blogs,
+  nonExistingId,
+  blogsInDb,
+}
