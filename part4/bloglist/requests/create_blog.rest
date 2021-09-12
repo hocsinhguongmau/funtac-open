@@ -1,11 +1,11 @@
 POST http://localhost:3001/api/blogs HTTP/1.1
 Content-type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3R0dHQiLCJpZCI6IjYxM2RlNjUzY2QyZThmYjgwNTU3ODhjNiIsImlhdCI6MTYzMTQ0NjYyMH0.WiU4kDa60m7BM6usU7LmGrX5UIerpIhU_BUy_BNxlKo
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluMTIzIiwiaWQiOiI2MTNlODFmNjU3OWYzZjFkNzk3N2VhYzAiLCJpYXQiOjE2MzE0ODY0NjgsImV4cCI6MTYzMTQ5MDA2OH0.3zZcb-eXAPZRLvVmm62x6wxlEwknrj4X0-6rS_ZZbZM
 
 {
-    "title": "Hmmmmmm5",
-    "author": "rootttt",
+    "title": "Blog 11111",
+    "author": "admin123",
     "url": "http://",
     "likes": 1,
-    "userId": "613cb64629a1162521c9db3c"
+    "userId": "613e81f6579f3f1d7977eac0"
 }
