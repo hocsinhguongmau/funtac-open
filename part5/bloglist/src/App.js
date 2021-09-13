@@ -33,7 +33,10 @@ const App = () => {
 				username,
 				password,
 			})
+			blogsService.setToken(user.token)
+			console.log(user.token)
 			setUser(user)
+
 			setUsername('')
 			setPassword('')
 		} catch (exception) {
@@ -91,8 +94,8 @@ const App = () => {
 					setErrorMessage('Successful')
 				})
 				.catch((error) => {
-					setErrorMessage(error.response.data)
-					console.log(error.response.data)
+					setErrorMessage(error.response.data.error)
+					console.log(error.response.data.error)
 				})
 		}
 		setTimeout(() => {
@@ -100,7 +103,46 @@ const App = () => {
 			setError(false)
 		}, 5000)
 	}
-
+	const loginForm = () => {
+		return (
+			<form onSubmit={handleLogin}>
+				<div>
+					username
+					<input
+						type='text'
+						value={username}
+						name='Username'
+						onChange={({ target }) => setUsername(target.value)}
+					/>
+				</div>
+				<div>
+					password
+					<input
+						type='password'
+						value={password}
+						name='Password'
+						onChange={({ target }) => setPassword(target.value)}
+					/>
+				</div>
+				<button type='submit'>login</button>
+			</form>
+		)
+	}
+	const blogForm = () => {
+		return (
+			<>
+				<Filter handleFilter={handleFilter} />
+				<Form
+					handleChangeTitle={handleChangeTitle}
+					handleSubmit={handleSubmit}
+					handleChangeAuthor={handleChangeAuthor}
+					handleChangeUrl={handleChangeUrl}
+					handleChangeLike={handleChangeLike}
+				/>
+				<Blogs results={results} handleDelete={handleDelete} />
+			</>
+		)
+	}
 	const handleChangeTitle = (event) => {
 		setNewTitle(event.target.value)
 	}
@@ -146,36 +188,7 @@ const App = () => {
 			{errorMessage ? (
 				<Notification message={errorMessage} error={error} />
 			) : null}
-			<form onSubmit={handleLogin}>
-				<div>
-					username
-					<input
-						type='text'
-						value={username}
-						name='Username'
-						onChange={({ target }) => setUsername(target.value)}
-					/>
-				</div>
-				<div>
-					password
-					<input
-						type='password'
-						value={password}
-						name='Password'
-						onChange={({ target }) => setPassword(target.value)}
-					/>
-				</div>
-				<button type='submit'>login</button>
-			</form>
-			<Filter handleFilter={handleFilter} />
-			<Form
-				handleChangeTitle={handleChangeTitle}
-				handleSubmit={handleSubmit}
-				handleChangeAuthor={handleChangeAuthor}
-				handleChangeUrl={handleChangeUrl}
-				handleChangeLike={handleChangeLike}
-			/>
-			<Blogs results={results} handleDelete={handleDelete} />
+			{user ? blogForm() : loginForm()}
 		</div>
 	)
 }
