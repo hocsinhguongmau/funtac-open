@@ -17,10 +17,11 @@ const create = async (newObject) => {
 	}
 
 	const response = await axios.post(baseUrl, newObject, config)
+	return response.data
 
-	const request = axios.post(baseUrl, newObject)
+	// const request = axios.post(baseUrl, newObject)
 
-	return request.then((response) => response.data)
+	// return request.then((response) => response.data)
 }
 
 const remove = (id) => {
