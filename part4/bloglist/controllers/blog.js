@@ -43,13 +43,16 @@ blogRouter.get('/:id', async (request, response) => {
 
 blogRouter.put('/:id', async (request, response) => {
 	const id = request.params.id
+	const body = request.body
 
-	const blog = await Blog.findById(id)
-	if (blog) {
-		response.json(blog.toJSON())
-	} else {
-		response.status(404).end()
+	const newBlog = {
+		title: body.title,
+		author: body.author,
+		url: body.url,
+		likes: body.likes,
 	}
+	const blog = await Blog.findByIdAndUpdate(id, newBlog)
+	response.json(blog)
 })
 
 blogRouter.delete('/:id', async (request, response) => {
