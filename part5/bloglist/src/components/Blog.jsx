@@ -1,16 +1,21 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
-export default function Blogs({ results, handleDelete }) {
+import BlogItem from './BlogItem'
+
+export default function Blogs({ results, handleDelete, handleLike }) {
 	return results.map((blog) => (
-		<div key={blog.id}>
-			<hr />
-			{blog.title} <br /> {blog.author}
-			<br />
-			{blog.url}
-			<br />
-			{blog.likes}
-			<br />
-			<button onClick={() => handleDelete(blog.id)}>Delete</button>
-		</div>
+		<BlogItem
+			key={blog.id}
+			blog={blog}
+			handleDelete={handleDelete}
+			handleLike={handleLike}
+		/>
 	))
+}
+
+BlogItem.propTypes = {
+	results: PropTypes.array,
+	handleDelete: PropTypes.func.isRequired,
+	handleLike: PropTypes.func.isRequired,
 }

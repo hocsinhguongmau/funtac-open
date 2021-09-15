@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blogs from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Filter from './components/Filter'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-import blogsService from './service/blogs'
-import loginService from './service/login'
+import * as blogsService from './service/blogs'
+import * as loginService from './service/login'
 
 const App = () => {
+	const blogFormRef = useRef()
+
 	const [blogs, setBlogs] = useState([])
 	const [results, setResults] = useState([])
 
@@ -17,13 +19,20 @@ const App = () => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [user, setUser] = useState(null)
+	const [update, setUpdate] = useState(null)
 
+	// useEffect(() => {
+	// 	blogsService.getAll().then((initialBlogs) => {
+	// 		setBlogs(sortingBlogs(initialBlogs))
+	// 		setResults(sortingBlogs(initialBlogs))
+	// 	})
+	// }, [])
 	useEffect(() => {
-		blogsService.getAll().then((initialBlogs) => {
-			setBlogs(initialBlogs)
-			setResults(initialBlogs)
+		blogsService.getAll().then((blogs) => {
+			setBlogs(sortingBlogs(blogs))
+			setResults(sortingBlogs(blogs))
 		})
-	}, [])
+	}, [update])
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
@@ -33,6 +42,10 @@ const App = () => {
 			blogsService.setToken(user.token)
 		}
 	}, [])
+
+	const sortingBlogs = (blogs) => {
+		return blogs.sort((a, b) => b.likes - a.likes)
+	}
 
 	const handleLogin = async (event) => {
 		event.preventDefault()
@@ -76,31 +89,39 @@ const App = () => {
 		document.location.href = '/'
 	}
 
+	const handleLike = async (blog) => {
+		const likes = blog.likes + 1
+		const newBlog = { ...blog, likes }
+		try {
+			await blogsService.update(blog.id, newBlog)
+			setUpdate(Math.floor(Math.random() * 1000))
+		} catch {
+			setErrorMessage('This blog does not exist')
+			setError(true)
+		}
+	}
+
 	const handleBlog = (blogObject) => {
+		blogFormRef.current.toggleVisibility()
 		if (results.find((blog) => blog.title === blogObject.title)) {
 			if (
 				window.confirm(
 					`${blogObject.title} is already added to blog list. Do you want to change url and author`,
 				)
 			) {
-				results.forEach((blog, index) => {
+				results.forEach(async (blog, index) => {
 					if (blog.title === blogObject.title) {
-						const modifiedResults = [...results]
-						modifiedResults[index].author = blogObject.author
-						modifiedResults[index].url = blogObject.url
-						modifiedResults[index].likes = blogObject.likes
-
-						blogsService
-							.update(blog.id, modifiedResults)
-							.then(setResults(modifiedResults))
-							.catch(() => {
-								setErrorMessage('This blog does not exist')
-								setError(true)
-								blogsService.getAll().then((initialBlogs) => {
-									setBlogs(initialBlogs)
-									setResults(initialBlogs)
-								})
-							})
+						const newBlog = blog
+						newBlog.author = blogObject.author
+						newBlog.url = blogObject.url
+						newBlog.likes = blogObject.likes ? blogObject.likes : 0
+						try {
+							await blogsService.update(blog.id, newBlog)
+							setUpdate(Math.floor(Math.random() * 1000))
+						} catch {
+							setErrorMessage('This blog does not exist')
+							setError(true)
+						}
 					}
 				})
 			}
@@ -129,10 +150,14 @@ const App = () => {
 				<Filter handleFilter={handleFilter} />
 				<p>{user.name} logged-in</p>{' '}
 				<button onClick={handleLogout}>Log out</button>
-				<Togglable buttonLabel='new note'>
+				<Togglable buttonLabel='new blog' ref={blogFormRef}>
 					<BlogForm handleBlog={handleBlog} />
 				</Togglable>
-				<Blogs results={results} handleDelete={handleDelete} />
+				<Blogs
+					results={results}
+					handleDelete={handleDelete}
+					handleLike={handleLike}
+				/>
 			</>
 		)
 	}
@@ -162,6 +187,7 @@ const App = () => {
 			blogsService.remove(id)
 		}
 	}
+
 	return (
 		<div>
 			<h2>Blog list</h2>
