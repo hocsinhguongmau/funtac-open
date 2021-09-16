@@ -12,13 +12,14 @@ export default function BlogItem({ blog, handleDelete, handleLike }) {
 
 	return (
 		<div style={blogStyle}>
-			{blog.title}{' '}
+			{blog.title} {blog.author}
 			<button onClick={() => setVisible(!visible)}>
 				{visible ? 'hide' : 'view'}
 			</button>
 			<br />
-			<div style={{ display: visible ? 'block' : 'none' }}>
-				{blog.author} <br />
+			<div
+				className='hidden-content'
+				style={{ display: visible ? 'block' : 'none' }}>
 				{blog.url}
 				<br />
 				{blog.likes} <button onClick={() => handleLike(blog)}>like</button>
@@ -29,7 +30,7 @@ export default function BlogItem({ blog, handleDelete, handleLike }) {
 	)
 }
 BlogItem.propTypes = {
-	handleDelete: PropTypes.func.isRequired,
-	handleLike: PropTypes.func.isRequired,
-	blog: PropTypes.array.isRequired,
+	handleDelete: PropTypes.func,
+	handleLike: PropTypes.func,
+	blog: PropTypes.object.isRequired,
 }

@@ -40,7 +40,12 @@ export default function BlogForm({ handleBlog }) {
 				Title: <input value={newTitle} onChange={handleChangeTitle} />
 			</div>
 			<div>
-				Author: <input value={newAuthor} onChange={handleChangeAuthor} />
+				Author:{' '}
+				<input
+					className='author'
+					value={newAuthor}
+					onChange={handleChangeAuthor}
+				/>
 			</div>
 			<div>
 				Link: <input value={newUrl} onChange={handleChangeUrl} />

@@ -16,6 +16,6 @@ export default function Blogs({ results, handleDelete, handleLike }) {
 
 BlogItem.propTypes = {
 	results: PropTypes.array,
-	handleDelete: PropTypes.func.isRequired,
-	handleLike: PropTypes.func.isRequired,
+	handleDelete: PropTypes.func,
+	handleLike: PropTypes.func,
 }
