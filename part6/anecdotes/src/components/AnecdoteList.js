@@ -5,13 +5,15 @@ import {
   delNotification,
   setNotification,
 } from '../reducers/notificationReducer'
+import { initAnecdotes } from '../reducers/anecdoteReducer'
+import * as anecdoteServices from '../services/anecdotes'
 
 export default function AnecdoteList() {
   const filter = useSelector((state) => state.filter)
   const anecdotes = useSelector((state) =>
     state.anecdote.sort((a, b) => b.votes - a.votes),
   )
-  const [state, setState] = useState(anecdotes)
+  const [state, setState] = useState([])
   const dispatch = useDispatch()
 
   const handleAddVote = (id, content) => {
@@ -19,6 +21,12 @@ export default function AnecdoteList() {
     dispatch(addVote(id))
     dispatch(setNotification(message))
   }
+  useEffect(() => {
+    anecdoteServices.getAll().then((anecdotes) => {
+      dispatch(initAnecdotes(anecdotes))
+      setState(anecdotes)
+    })
+  }, [dispatch])
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch(delNotification())
