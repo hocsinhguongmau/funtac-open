@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React from 'react'
+import { connect } from 'react-redux'
 import { filterAnecdotes } from '../reducers/filterReducer'
 
-const Filter = () => {
-  const dispatch = useDispatch()
+const Filter = (props) => {
   const handleFilter = (e) => {
-    dispatch(filterAnecdotes(e.target.value))
+    props.filterAnecdotes(e.target.value)
   }
   return (
     <div>
@@ -14,4 +13,7 @@ const Filter = () => {
   )
 }
 
-export default Filter
+const mapDispatchToProps = {
+  filterAnecdotes,
+}
+export default connect(null, mapDispatchToProps)(Filter)
