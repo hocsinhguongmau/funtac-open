@@ -1,3 +1,5 @@
+import * as anecdoteServices from '../services/anecdotes'
+
 const getId = () => (100000 * Math.random()).toFixed(0)
 
 const anecdoteReducer = (state = [], action) => {
@@ -19,13 +21,29 @@ const anecdoteReducer = (state = [], action) => {
       return state
   }
 }
-export const initAnecdotes = (anecdotes) => {
-  return { type: 'INIT_ANECDOTES', data: anecdotes }
+export const initAnecdotes = () => {
+  return async (dispatch) => {
+    const anecdotes = await anecdoteServices.getAll()
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      data: anecdotes,
+    })
+  }
 }
-export const addVote = (id) => ({ type: 'VOTE', data: id })
-export const addAnecdote = (anecdote) => ({
-  type: 'ADD_ANECDOTE',
-  data: anecdote,
-})
+export const addVote = (anecdote) => {
+  return async (dispatch) => {
+    await anecdoteServices.update(anecdote.id, {
+      ...anecdote,
+      votes: anecdote.votes + 1,
+    })
+    dispatch({ type: 'VOTE', data: anecdote.id })
+  }
+}
+export const addAnecdote = (anecdote) => {
+  return async (dispatch) => {
+    await anecdoteServices.create({ content: anecdote, id: getId(), votes: 0 })
+    dispatch({ type: 'ADD_ANECDOTE', data: anecdote })
+  }
+}
 
 export default anecdoteReducer
