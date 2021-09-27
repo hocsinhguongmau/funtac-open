@@ -3,7 +3,7 @@ import * as blogServices from '../service/blogs'
 
 const loginReducer = (state = [], action) => {
   switch (action.type) {
-    case 'INIT_USER':
+    case 'CHECK_USER':
       return action.data
     case 'LOGIN':
       return action.data
@@ -14,15 +14,15 @@ const loginReducer = (state = [], action) => {
   }
 }
 
-export const initUser = () => {
+export const checkUser = () => {
   const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
   if (loggedUserJSON) {
     const user = JSON.parse(loggedUserJSON)
     blogServices.setToken(user.token)
-    return { type: 'INIT_USER', data: user }
+    return { type: 'CHECK_USER', data: user }
   }
 
-  return { type: 'INIT_USER', data: null }
+  return { type: 'CHECK_USER', data: null }
 }
 
 export const login = (credentials) => {

@@ -19,13 +19,16 @@ const LoginForm = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           username
-          <input {...username} />
+          <input className='border-2 border-gray-500' {...username} />
         </div>
         <div>
           password
-          <input {...password} />
+          <input className='border-2 border-gray-500' {...password} />
         </div>
-        <button type='submit' id='user-login'>
+        <button
+          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+          type='submit'
+          id='user-login'>
           login
         </button>
       </form>

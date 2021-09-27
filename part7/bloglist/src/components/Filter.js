@@ -8,7 +8,12 @@ function Filter(props) {
   }
   return (
     <p>
-      filter shown with <input type='text' onChange={handleFilter} />
+      filter shown with{' '}
+      <input
+        className='border-2 border-gray-500'
+        type='text'
+        onChange={handleFilter}
+      />
     </p>
   )
 }
