@@ -98,6 +98,7 @@ const typeDefs = gql`
     authorCount: Int
     allBooks(author: String, genres: String): [Book!]!
     allAuthors: [Authors!]!
+    findAuthor(name: String!): Authors
   }
   type Mutation {
     addBook(
@@ -106,6 +107,7 @@ const typeDefs = gql`
       published: Int
       genres: [String!]
     ): Book
+    addAuthor(name: String!, born: Int): Authors
     editAuthor(name: String!, setBornTo: Int): [Authors]
   }
 `
@@ -133,6 +135,8 @@ const resolvers = {
         ...author,
         bookCount: books.filter((book) => book.author === author.name).length,
       })),
+    findAuthor: (root, args) =>
+      authors.find((author) => author.name === args.name),
   },
   Mutation: {
     addBook: (root, args) => {
@@ -144,6 +148,15 @@ const resolvers = {
       const book = { ...args, id: uuid() }
       books = books.concat(book)
       return book
+    },
+    addAuthor: (root, args) => {
+      if (authors.find((author) => author.name === args.name)) {
+        throw new UserInputError('Author title must be unique', {
+          invalidArgs: args.name,
+        })
+      }
+      const author = { ...args, id: uuid() }
+      authors = authors.concat(author)
     },
     editAuthor: (root, args) => {
       let modifiedAuthors = [...authors]
