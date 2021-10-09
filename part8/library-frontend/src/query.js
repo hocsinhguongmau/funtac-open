@@ -6,7 +6,6 @@ const ALL_AUTHORS = gql`
       name
       born
       bookCount
-      id
     }
   }
 `
@@ -15,9 +14,10 @@ const ALL_BOOKS = gql`
     allBooks {
       title
       published
-      author
+      author {
+        name
+      }
       genres
-      id
     }
   }
 `
@@ -48,7 +48,6 @@ const CREATE_BOOK = gql`
       published
       author
       genres
-      id
     }
   }
 `
@@ -58,7 +57,6 @@ const EDIT_AUTHOR = gql`
       name
       born
       bookCount
-      id
     }
   }
 `
