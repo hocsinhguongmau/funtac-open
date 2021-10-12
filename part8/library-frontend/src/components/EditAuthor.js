@@ -15,6 +15,9 @@ export default function EditAuthor(props) {
       },
     })
   }
+  if (!props.show) {
+    return null
+  }
   const authors = props.authors
   return (
     <div>

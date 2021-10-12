@@ -61,8 +61,8 @@ const typeDefs = gql`
     addBook(
       title: String!
       author: String!
-      published: Int
-      genres: [String!]
+      published: Int!
+      genres: [String!]!
     ): Book
     addAuthor(name: String!, born: Int): Author
     editAuthor(name: String!, setBornTo: Int): Author
@@ -110,9 +110,9 @@ const resolvers = {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser
 
-      if (!currentUser) {
-        throw new AuthenticationError('not authenticated')
-      }
+      // if (!currentUser) {
+      //   throw new AuthenticationError('not authenticated')
+      // }
 
       if (await Book.findOne({ title: args.title })) {
         throw new UserInputError('Book title must be unique', {
@@ -128,7 +128,6 @@ const resolvers = {
       const author = await Author.findOne({ name: args.author })
       if (author) {
         book.author = author
-        console.log('lbmc', book.author)
       } else {
         const author = new Author({ name: args.author })
         book.author = await author.save()
@@ -152,9 +151,9 @@ const resolvers = {
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
       console.log(currentUser)
-      if (!currentUser) {
-        throw new AuthenticationError('not authenticated')
-      }
+      // if (!currentUser) {
+      //   throw new AuthenticationError('not authenticated')
+      // }
 
       const author = await Author.findOne({ name: args.name })
       if (author) {
@@ -163,7 +162,6 @@ const resolvers = {
         } else {
           author.born = null
         }
-        console.log(author)
       } else {
         throw new UserInputError('cant find author', {
           invalidArgs: args.name,
@@ -191,7 +189,6 @@ const resolvers = {
         username: user.username,
         id: user._id,
       }
-
       return { value: jwt.sign(userForToken, JWT_SECRET) }
     },
   },

@@ -10,11 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "^2.25.2",
+    "apollo-server": "^2.24.1",
     "dotenv": "^10.0.0",
-    "graphql": "^15.6.0",
+    "graphql": "^15.5.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.9",
-    "mongoose-unique-validator": "^3.0.0"
+    "mongoose": "^5.12.12",
+    "mongoose-unique-validator": "^2.0.1"
   }
 }
