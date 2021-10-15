@@ -3,6 +3,7 @@ const {
   gql,
   UserInputError,
   AuthenticationError,
+  PubSub,
 } = require('apollo-server')
 const mongoose = require('mongoose')
 require('dotenv').config()
@@ -14,6 +15,7 @@ const MONGODB_URI = process.env.MONGODB_URI
 const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
+const pubsub = new PubSub()
 
 console.log('connecting to', MONGODB_URI)
 
@@ -50,8 +52,8 @@ const typeDefs = gql`
     value: String!
   }
   type Query {
-    bookCount: Int
-    authorCount: Int
+    bookCount: Int!
+    authorCount: Int!
     allBooks(author: String, genres: String): [Book!]!
     allAuthors: [Author!]!
     findAuthor(name: String!): Author
@@ -67,14 +69,18 @@ const typeDefs = gql`
     addAuthor(name: String!, born: Int): Author
     editAuthor(name: String!, setBornTo: Int): Author
     createUser(username: String!, favoriteGenre: String!): User
+
     login(username: String!, password: String!): Token
+  }
+  type Subscription {
+    bookAdded: Book!
   }
 `
 
 const resolvers = {
   Query: {
-    bookCount: () => Book.collection.countDocuments(),
-    authorCount: () => Author.collection.countDocuments(),
+    bookCount: () => Book.countDocuments(),
+    authorCount: () => Author.countDocuments(),
     allBooks: async (root, args) => {
       // if (args.author && args.genres) {
       //   return books
@@ -84,12 +90,13 @@ const resolvers = {
       // if (args.author) {
       //   return books.filter((book) => book.author === args.author)
       // }
+
       if (args.genres) {
-        return await Book.find({})
-          .filter((book) => book.genres.includes(args.genres))
-          .populate('author')
+        console.log(args.genres)
+        return Book.find({ genres: { $in: [args.genres] } }).populate('author')
       }
-      return await Book.find({}).populate('author')
+
+      return Book.find().populate('author')
     },
     allAuthors: async () => {
       const authors = await Author.find({})
@@ -110,9 +117,9 @@ const resolvers = {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser
 
-      // if (!currentUser) {
-      //   throw new AuthenticationError('not authenticated')
-      // }
+      if (!currentUser) {
+        throw new AuthenticationError('not authenticated')
+      }
 
       if (await Book.findOne({ title: args.title })) {
         throw new UserInputError('Book title must be unique', {
@@ -132,6 +139,9 @@ const resolvers = {
         const author = new Author({ name: args.author })
         book.author = await author.save()
       }
+      book = await Book.findById(book.id).populate('author')
+      pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
       return book.save()
     },
     addAuthor: async (root, args) => {
@@ -151,9 +161,9 @@ const resolvers = {
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
       console.log(currentUser)
-      // if (!currentUser) {
-      //   throw new AuthenticationError('not authenticated')
-      // }
+      if (!currentUser) {
+        throw new AuthenticationError('not authenticated')
+      }
 
       const author = await Author.findOne({ name: args.name })
       if (author) {
@@ -189,7 +199,13 @@ const resolvers = {
         username: user.username,
         id: user._id,
       }
+
       return { value: jwt.sign(userForToken, JWT_SECRET) }
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
     },
   },
 }

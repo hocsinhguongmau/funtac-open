@@ -2,35 +2,25 @@ import React, { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 import { LOGIN } from '../query'
 
-const LoginForm = ({ setError, setToken, show }) => {
+const LoginForm = ({ setError, setToken, show, setPage }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const [login, result] = useMutation(LOGIN, {
-    onError: (error) => {
-      setError(error.graphQLErrors[0].message)
-    },
-  })
+  const [login, result] = useMutation(LOGIN)
 
   useEffect(() => {
     if (result.data) {
       const token = result.data.login.value
       setToken(token)
+      setPage('authors')
       localStorage.setItem('phonenumbers-user-token', token)
     }
-  }, [result.data]) // eslint-disable-line
-
-  useEffect(() => {
-    const hmm = localStorage.getItem('phonenumbers-user-token')
-    if (hmm) {
-      setToken(hmm)
-    }
-  }, []) // eslint-disable-line
+  }, [result.data, setToken, setPage]) // eslint-disable-line
 
   const submit = async (event) => {
     event.preventDefault()
     await login({ variables: { username, password } })
-    window.location.href = '/'
+    // window.location.href = '/'
   }
   if (!show) {
     return null
