@@ -33,7 +33,6 @@ const Books = (props) => {
       setMeuBooks(myBook)
     },
   })
-
   useEffect(() => {
     const genres = []
     books.forEach((book) => {
@@ -45,6 +44,10 @@ const Books = (props) => {
     })
     setGenres(Object.keys(genres))
   }, [books])
+
+  useEffect(() => {
+    console.log(meResult)
+  }, [meResult])
 
   const handleFilter = (genre) => {
     setGenreBook(genre)
@@ -86,7 +89,7 @@ const Books = (props) => {
           {genre}
         </button>
       ))}
-      {meResult.loading ? null : (
+      {/* {meResult.loading ? null : (
         <>
           <h2>Recommend books</h2>
           <p>Books in your favorite genre {meResult.data.me.favoriteGenre}</p>
@@ -98,7 +101,7 @@ const Books = (props) => {
             </tr>
           ))}
         </>
-      )}
+      )} */}
     </div>
   )
 }

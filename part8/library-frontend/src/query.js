@@ -9,13 +9,13 @@ const AUTHOR_DETAILS = gql`
 `
 const BOOK_DETAILS = gql`
   fragment BookDetails on Book {
+    id
     title
     author {
       ...AuthorDetails
     }
     genres
     published
-    id
   }
   ${AUTHOR_DETAILS}
 `

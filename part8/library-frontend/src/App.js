@@ -11,6 +11,7 @@ import {
   ALL_BOOKS,
   EDIT_AUTHOR,
   BOOK_ADDED,
+  ME,
 } from './query'
 
 import Authors from './components/Authors'
@@ -21,7 +22,7 @@ import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [token, setToken] = useState(null)
-  const [page, setPage] = useState('authors')
+  const [page, setPage] = useState('books')
   const allAuthors = useQuery(ALL_AUTHORS)
   const [error, setError] = useState(null)
   useEffect(() => {
@@ -58,12 +59,10 @@ const App = () => {
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const book = subscriptionData.data.bookAdded
-      alert('new book ' + book.title + ' by ' + book.author.name)
+      notify(`${book.title} added`)
       updateCacheWith(book)
     },
   })
-
-  console.log(allAuthors.data)
   return (
     <div>
       {error ? error : null}

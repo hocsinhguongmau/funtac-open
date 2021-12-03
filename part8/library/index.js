@@ -3,7 +3,6 @@ const {
   gql,
   UserInputError,
   AuthenticationError,
-  PubSub,
 } = require('apollo-server')
 const mongoose = require('mongoose')
 require('dotenv').config()
@@ -15,6 +14,8 @@ const MONGODB_URI = process.env.MONGODB_URI
 const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
+const { PubSub } = require('graphql-subscriptions')
+
 const pubsub = new PubSub()
 
 console.log('connecting to', MONGODB_URI)
@@ -110,13 +111,24 @@ const resolvers = {
     },
     findAuthor: async (root, args) => await Author.findOne({ name: args.name }),
     me: (root, args, context) => {
-      return context.currentUser
+      const currentUser = context.currentUser
+      // const currentUser = {
+      //   username: 'mluukai',
+      //   id: '61602fb3dc22c94ddd97e154',
+      //   iat: 1638516143,
+      //   favoriteGenre: ['lbmc'],
+      // }
+      return currentUser
     },
   },
   Mutation: {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser
-
+      // const currentUser = {
+      //   username: 'mluukai',
+      //   id: '61602fb3dc22c94ddd97e154',
+      //   iat: 1638516143,
+      // }
       if (!currentUser) {
         throw new AuthenticationError('not authenticated')
       }
@@ -160,7 +172,11 @@ const resolvers = {
     },
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
-      console.log(currentUser)
+      // const currentUser = {
+      //   username: 'mluukai',
+      //   id: '61602fb3dc22c94ddd97e154',
+      //   iat: 1638516143,
+      // }
       if (!currentUser) {
         throw new AuthenticationError('not authenticated')
       }
@@ -181,7 +197,6 @@ const resolvers = {
     },
     createUser: (root, args) => {
       const user = new User({ username: args.username })
-      console.log(user)
       return user.save().catch((error) => {
         throw new UserInputError(error.message, {
           invalidArgs: args,
@@ -218,11 +233,18 @@ const server = new ApolloServer({
     if (auth && auth.toLowerCase().startsWith('bearer ')) {
       const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET)
       const currentUser = await User.findById(decodedToken.id)
+      // const currentUser = await User.findById('61602fb3dc22c94ddd97e154')
+      // const currentUser = {
+      //   username: 'mluukai',
+      //   id: '61602fb3dc22c94ddd97e154',
+      //   iat: 1638516143,
+      // }
       return { currentUser }
     }
   },
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
