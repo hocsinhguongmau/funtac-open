@@ -59,7 +59,7 @@ const App = () => {
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const book = subscriptionData.data.bookAdded
-      notify(`${book.title} added`)
+      alert(`${book.title} added`)
       updateCacheWith(book)
     },
   })
