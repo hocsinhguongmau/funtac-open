@@ -36,37 +36,31 @@ const exerciseCalculator = (array: number[], target: number): ResultType => {
   }
 }
 
-interface exerciseValues {
-  array: number[]
-  target: number
-}
+// interface exerciseValues {
+//   array: number[]
+//   target: number
+// }
 
-const exerciseArguments = (args: Array<string>): exerciseValues => {
-  if (args.length < 7) throw new Error('Not enough arguments')
-  console.log(args[0])
-  let hmm: number[] = []
-  args.map((arg, index) => {
+export const exerciseArguments = (args: Array<string>): ResultType => {
+  if (args.length < 4) throw new Error('Not enough arguments')
+  const myArray = args[2].slice(1, args[2].length - 1).split(',')
+  const hmm: number[] = []
+  myArray.map((arg, index) => {
     if (index > 1 && isNaN(Number(arg))) {
       throw new Error('Provided values were not numbers!')
     }
-    if (index > 1 && index < args.length) {
-      hmm.push(Number(arg))
-    }
+    hmm.push(Number(arg))
   })
-
-  return {
-    array: hmm,
-    target: Number(args[args.length - 1]),
-  }
+  return exerciseCalculator(hmm, Number(args[3]))
 }
 
-try {
-  const { array, target } = exerciseArguments(process.argv)
-  console.log(exerciseCalculator(array, target))
-} catch (error: unknown) {
-  let errorMessage = 'Something bad happened.'
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message
-  }
-  console.log(errorMessage)
-}
+// try {
+//   const { array, target } = exerciseArguments(process.argv)
+//   console.log(exerciseCalculator(array, target))
+// } catch (error: unknown) {
+//   let errorMessage = 'Something bad happened.'
+//   if (error instanceof Error) {
+//     errorMessage += ' Error: ' + error.message
+//   }
+//   console.log(errorMessage)
+// }
